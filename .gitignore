@@ -1,3 +1,10 @@
+# Visual Studio hidden Directory
+.vs/
+
+# Exe Directory
+Debug/
+Release/
+
 # Prerequisites
 *.d
 
