@@ -15,11 +15,11 @@ void AxisLine::Draw(HDC hdc)
 {
 	//テキスト表示
 	SetTextColor(hdc, BLACK);		//テキスト色の設定
-	wsprintf(str, TEXT("y"));	//バッファに格納
-	TextOut(hdc, Axis_.x-10, 10, str, _tcslen(str));	//表示座標,文字列と長さ
+	wsprintf( str, TEXT("y") );	//バッファに格納
+	TextOut( hdc, 190, 10, str, _tcslen(str) );	//表示座標,文字列と長さ
 
-	wsprintf(str, TEXT("x"));
-	TextOut(hdc, SCREEN_WIDTH - 40, SCREEN_HEIGHT / 2 + 5, str, _tcslen(str));
+	wsprintf( str, TEXT("x") );
+	TextOut( hdc, SCREEN_WIDTH - 40, SCREEN_HEIGHT / 2 + 5, str, _tcslen(str) );
 
 	//軸表示
 	//y

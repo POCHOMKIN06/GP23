@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <tchar.h>
+
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -8,7 +9,7 @@
 
 // マクロ定義
 #define CLASS_NAME	TEXT("サンプル")
-#define WINDOW_NAME	TEXT("ベクトルの表示")
+#define WINDOW_NAME	TEXT("課題05 運動してる?")
 
 #define SCREEN_WIDTH	(1280)	// ウィンドウの幅
 #define SCREEN_HEIGHT	(640)	// ウィンドウの高さ
