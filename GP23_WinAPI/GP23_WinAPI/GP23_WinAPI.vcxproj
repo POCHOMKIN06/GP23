@@ -123,7 +123,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\AxisLine.cpp" />
     <ClCompile Include="Src\main.cpp" />
+    <ClCompile Include="Src\MoveType.cpp" />
+    <ClCompile Include="Src\MovingCircle.cpp" />
+    <ClCompile Include="Src\Vector.cpp" />
+    <ClCompile Include="Src\Viewer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Src\AxisLine.h" />
+    <ClInclude Include="Src\main.h" />
+    <ClInclude Include="Src\MoveType.h" />
+    <ClInclude Include="Src\MovingCircle.h" />
+    <ClInclude Include="Src\Vector.h" />
+    <ClInclude Include="Src\VIewer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
