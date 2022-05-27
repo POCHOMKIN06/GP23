@@ -1,7 +1,3 @@
-//課題05　運動してる?
-//2:投下速度運動、3:自由落下運動、5:斜方投射を画面内に表現する
-//提出期限:5/13(金)
-
 // ヘッダー
 #include "main.h"
 
@@ -9,6 +5,7 @@
 #include <cstdio>
 #include "strsafe.h"
 
+#include "Window.h"
 
 #include "AxisLine.h"
 #include "VIewer.h"
@@ -17,6 +14,8 @@
 
 //マクロ定義
 #define IDT_TIMER1	(100)
+//#define DEVIDE_NUM (100)
+
 
 // プロトタイプ宣言
 LRESULT	CALLBACK WndProc(HWND hWnd,
@@ -26,26 +25,36 @@ void TimeReset(void);
 void UpdateMoveType(void);
 
 //パラメータプリセット
-constexpr float INIT_VEL     = 10.0f;
-constexpr float ACCELERATION = 4.0f;
-constexpr float GRAVITY      = -9.8f;
+//constexpr float INIT_VEL     = 10.0f;
+//constexpr float ACCELERATION = 4.0f;
+//constexpr float GRAVITY      = -9.8f;
 
 // グローバル変数
 HINSTANCE g_hInstance;
-float g_time;
-float g_initvel;
-float g_acc;
-float g_gravityAcc;
-float g_theta;
-POINT g_origin = { 200, SCREEN_HEIGHT / 2 };
+//float g_time;
+//float g_initvel;
+//float g_acc;
+//float g_gravityAcc;
+//float g_theta;
+//POINT g_origin = { 200, SCREEN_HEIGHT / 2 };
+//POINTFLOAT g_pos[4] = {
+//	{100.0f, 400.0f},	//始点
+//	{200.0f, 100.0f},	//中間点
+//	{500.0f, 200.0f},	//中間点
+//	{600.0f, 550.0f}	//終点
+//};
+//POINTFLOAT g_point[DEVIDE_NUM+1] = { 0.0f, 0.0f };
+
 
 //自作オブジェクト
-AxisLine		g_AxisLine(g_origin.x, g_origin.y);		//座標軸
-Viewer			g_Viewer;								//各種パラメータ表示
-MOVE_TYPE		g_MoveType = MOVE_TYPE::Constant_Velocity;				//運動挙動の種類
-MovingCircle	g_Circle[static_cast<unsigned int>(MOVE_TYPE::END)];	//運動する円
+//AxisLine		g_AxisLine(g_origin.x, g_origin.y);		//座標軸
+//Viewer			g_Viewer;								//各種パラメータ表示
+//MOVE_TYPE		g_MoveType = MOVE_TYPE::Constant_Velocity;				//運動挙動の種類
+//MovingCircle	g_Circle[static_cast<unsigned int>(MOVE_TYPE::END)];	//運動する円
 
 
+//namespace
+using namespace Oshima;
 
 // main
 int WINAPI WinMain(HINSTANCE hInstance,
@@ -55,50 +64,56 @@ int WINAPI WinMain(HINSTANCE hInstance,
 {
 	g_hInstance = hInstance;
 
-	Init();
+	//Init();
 
-	WNDCLASSEX wcex = {
-		sizeof( WNDCLASSEX ),
-		CS_CLASSDC,
-		WndProc,
-		0,
-		0,
-		hInstance,
-		NULL,
-		LoadCursor( NULL, IDC_ARROW ),	//カーソルアイコン読込
-		(HBRUSH)(COLOR_WINDOW+1),
-		NULL,
-		CLASS_NAME,
-		NULL
-	};
+	Window window(CLASS_NAME, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (window.Create() == FALSE) {
+		return 0;
+	}
+
+
+	//WNDCLASSEX wcex = {
+	//	sizeof( WNDCLASSEX ),
+	//	CS_CLASSDC,
+	//	WndProc,
+	//	0,
+	//	0,
+	//	hInstance,
+	//	NULL,
+	//	LoadCursor( NULL, IDC_ARROW ),	//カーソルアイコン読込
+	//	(HBRUSH)(COLOR_WINDOW+1),
+	//	NULL,
+	//	CLASS_NAME,
+	//	NULL
+	//};
 
 	HWND	hWnd;
 	MSG		msg;
 
-	// ウィンドウクラスの登録
-	RegisterClassEx(&wcex);
+	//// ウィンドウクラスの登録
+	//RegisterClassEx(&wcex);
 
-	// ウィンドウの作成
-	hWnd = CreateWindowEx(
-		0,
-		CLASS_NAME,
-		WINDOW_NAME,
-		WS_OVERLAPPEDWINDOW,	//ウィンドウスタイル
-		CW_USEDEFAULT,	//作成位置(x,y)
-		CW_USEDEFAULT,	//左上(0,0)
-		SCREEN_WIDTH,
-		SCREEN_HEIGHT,
-		NULL,
-		NULL,
-		hInstance,
-		NULL
-	);
+	//// ウィンドウの作成
+	//hWnd = CreateWindowEx(
+	//	0,
+	//	CLASS_NAME,
+	//	WINDOW_NAME,
+	//	WS_OVERLAPPEDWINDOW,	//ウィンドウスタイル
+	//	CW_USEDEFAULT,	//作成位置(x,y)
+	//	CW_USEDEFAULT,	//左上(0,0)
+	//	SCREEN_WIDTH,
+	//	SCREEN_HEIGHT,
+	//	NULL,
+	//	NULL,
+	//	hInstance,
+	//	NULL
+	//);
 
-	// ウィンドウの表示
-	ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
+	//// ウィンドウの表示
+	//ShowWindow(hWnd, nCmdShow);
+	//UpdateWindow(hWnd);
 
-	SetTimer(hWnd, IDT_TIMER1, 1000/FPS, NULL);	//第3引数:50ms(1000/20fps)
+	//SetTimer(hWnd, IDT_TIMER1, 1000/FPS, NULL);	//第3引数:50ms(1000/20fps)
 
 	// メッセージループ
 	while (GetMessage(&msg, NULL, 0, 0 ) != 0)
@@ -107,8 +122,8 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	}
 
-	// ウィンドウの登録を破棄
-	UnregisterClass(CLASS_NAME, wcex.hInstance);
+	//// ウィンドウの登録を破棄
+	//UnregisterClass(CLASS_NAME, wcex.hInstance);
 
 	return (int)msg.wParam;
 
@@ -134,63 +149,67 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 		break;
 	case WM_TIMER:
 	{
-		switch (wParam)
-		{
-		case IDT_TIMER1:
-			//データコピー
-			MovingCircle* temp = &g_Circle[static_cast<unsigned int>(g_MoveType)];
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		InvalidateRect(hWnd, &rect, TRUE);
 
-			//時間の経過
-			g_time += 0.5f;
-			g_Viewer.SetTime(g_time);
+		//switch (wParam)
+		//{
+		//case IDT_TIMER1:
+		//	//データコピー
+		//	MovingCircle* temp = &g_Circle[static_cast<unsigned int>(g_MoveType)];
 
-			//時間リセット
-			POINT pos = temp->GetPos();
-			if (pos.x < 0 || pos.x > SCREEN_WIDTH || pos.y > SCREEN_HEIGHT || pos.y < 0) {
-				TimeReset();
-			}
+		//	//時間の経過
+		//	g_time += 0.5f;
+		//	g_Viewer.SetTime(g_time);
 
-			switch (g_MoveType)
-			{
-			case MOVE_TYPE::Constant_Velocity://等速運動
-				pos.x = static_cast<int>(g_origin.x + g_initvel * g_time);
-				pos.y = static_cast<int>(g_origin.y);
-				break;
-			case MOVE_TYPE::Constant_Acceleration://等加速運動
-				pos.x = static_cast<int>(g_origin.x + g_initvel * g_time + 0.5f*g_acc*g_time*g_time);
-				pos.y = static_cast<int>(g_origin.y);
-				break;
-			case MOVE_TYPE::Free_Fall://自由落下運動
-				pos.x = static_cast<int>(g_origin.x);
-				pos.y = static_cast<int>(g_origin.y - 0.5f*g_gravityAcc*g_time*g_time);
-				break;
-			case MOVE_TYPE::Vertical_Throw_Up://鉛直投げ上げ運動
-				pos.x = static_cast<int>(g_origin.x);
-				pos.y = static_cast<int>(g_origin.y - g_initvel * g_time - 0.5f*g_gravityAcc*g_time*g_time);
-				break;
-			case MOVE_TYPE::Oblique_Throw://斜方投射運動
-				pos.x = static_cast<int>(g_origin.x - g_initvel * g_time * cos((-g_theta + 180.0f)*M_PI / 180.0f));
-				pos.y = static_cast<int>(g_origin.y - g_initvel * g_time * sin(g_theta*M_PI / 180.0f) - 0.5f*g_gravityAcc*g_time*g_time);
-				break;
-			case MOVE_TYPE::END:
-				break;
-			default:
-				break;
-			}
-			temp->SetPos(pos);
+		//	//時間リセット
+		//	POINT pos = temp->GetPos();
+		//	if (pos.x < 0 || pos.x > SCREEN_WIDTH || pos.y > SCREEN_HEIGHT || pos.y < 0) {
+		//		TimeReset();
+		//	}
+
+		//	switch (g_MoveType)
+		//	{
+		//	case MOVE_TYPE::Constant_Velocity://等速運動
+		//		pos.x = static_cast<int>(g_origin.x + g_initvel * g_time);
+		//		pos.y = static_cast<int>(g_origin.y);
+		//		break;
+		//	case MOVE_TYPE::Constant_Acceleration://等加速運動
+		//		pos.x = static_cast<int>(g_origin.x + g_initvel * g_time + 0.5f*g_acc*g_time*g_time);
+		//		pos.y = static_cast<int>(g_origin.y);
+		//		break;
+		//	case MOVE_TYPE::Free_Fall://自由落下運動
+		//		pos.x = static_cast<int>(g_origin.x);
+		//		pos.y = static_cast<int>(g_origin.y - 0.5f*g_gravityAcc*g_time*g_time);
+		//		break;
+		//	case MOVE_TYPE::Vertical_Throw_Up://鉛直投げ上げ運動
+		//		pos.x = static_cast<int>(g_origin.x);
+		//		pos.y = static_cast<int>(g_origin.y - g_initvel * g_time - 0.5f*g_gravityAcc*g_time*g_time);
+		//		break;
+		//	case MOVE_TYPE::Oblique_Throw://斜方投射運動
+		//		pos.x = static_cast<int>(g_origin.x - g_initvel * g_time * cos((-g_theta + 180.0f)*M_PI / 180.0f));
+		//		pos.y = static_cast<int>(g_origin.y - g_initvel * g_time * sin(g_theta*M_PI / 180.0f) - 0.5f*g_gravityAcc*g_time*g_time);
+		//		break;
+		//	case MOVE_TYPE::END:
+		//		break;
+		//	default:
+		//		break;
+		//	}
+		//	temp->SetPos(pos);
 
 
-			//再描画を指示
-			RECT rect = {
-				0,0, SCREEN_WIDTH, SCREEN_HEIGHT
-			};
-			InvalidateRect(hWnd, &rect, TRUE);
+		//	//再描画を指示
+		//	RECT rect = {
+		//		0,0, SCREEN_WIDTH, SCREEN_HEIGHT
+		//	};
+		//	InvalidateRect(hWnd, &rect, TRUE);
 
-			break;
-		//default:
 		//	break;
-		}
-		break;
+		////default:
+		////	break;
+		//}
+		//break;
 	}
 	case WM_PAINT:		//描画命令が出た
 	{
@@ -201,35 +220,62 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 		//描画処理はここに書く
 		//
 
-		//座標軸作成
-		g_AxisLine.Draw(hDC);
-		//表示物
-		g_Viewer.Draw(hDC, g_MoveType);
+		//制御点の描画
+		//MoveToEx(hDC, static_cast<int>(g_pos[0].x), static_cast<int>(g_pos[0].y), NULL);
+		//for (int i = 0; i < sizeof(g_pos) / sizeof(POINTFLOAT); i++) {
+		//	LineTo(hDC, g_pos[i].x, g_pos[i].y);
+		//}
 
-		//ペンを作成
-		hPen = CreatePen(PS_SOLID, 3, GREEN);	//線種,太さ,色
-		//ペンを持ち替え
-		hPenOld = (HPEN)SelectObject(hDC, hPen);
+		////曲線を計算
+		//MoveToEx(hDC, static_cast<int>(g_pos[0].x), static_cast<int>(g_pos[0].y), NULL);
+		//float t = 0.0f;
+		//for (int i = 0; i <= DEVIDE_NUM; i++) {
+		//	g_point[i].x =
+		//		(1.0f - t)*(1.0f - t)*(1.0f - t)*g_pos[0].x
+		//		+ 3 * (1.0f - t)*(1.0f - t)*t*g_pos[1].x
+		//		+ 3 * (1.0f - t)*t*t*g_pos[2].x
+		//		+ t * t*t*g_pos[3].x;
+		//	g_point[i].y = 
+		//		(1.0f - t)*(1.0f - t)*(1.0f - t)*g_pos[0].y
+		//		+ 3 * (1.0f - t)*(1.0f - t)*t*g_pos[1].y
+		//		+ 3 * (1.0f - t)*t*t*g_pos[2].y
+		//		+ t * t*t*g_pos[3].y;
+		//	t += 1.0f / DEVIDE_NUM;
+		//}
 
-		//円を描画
-		g_Circle[static_cast<unsigned int>(g_MoveType)].Draw(hDC);
+		//for (int i = 0; i <= DEVIDE_NUM; i++) {
+		//	LineTo(hDC, g_point[i].x, g_point[i].y);
+		//}
 
-		//ペンを戻す
-		SelectObject(hDC, hPenOld);
-		//作成したペンの削除
-		DeleteObject(hPen);
+		////座標軸作成
+		//g_AxisLine.Draw(hDC);
+		////表示物
+		//g_Viewer.Draw(hDC, g_MoveType);
 
-		//ブラシの作成
-		hBrush = CreateSolidBrush(RED);
-		//ブラシを持ち替え
-		hBrushOld = (HBRUSH)SelectObject(hDC, hBrush);
+		////ペンを作成
+		//hPen = CreatePen(PS_SOLID, 3, GREEN);	//線種,太さ,色
+		////ペンを持ち替え
+		//hPenOld = (HPEN)SelectObject(hDC, hPen);
 
-		//四角を描画
-		//Rectangle(hDC, 340, 340, 460, 460);
-		//ブラシを戻す
-		SelectObject(hDC, hBrushOld);
-		//作成したブラシの削除
-		DeleteObject(hBrush);
+		////円を描画
+		//g_Circle[static_cast<unsigned int>(g_MoveType)].Draw(hDC);
+
+		////ペンを戻す
+		//SelectObject(hDC, hPenOld);
+		////作成したペンの削除
+		//DeleteObject(hPen);
+
+		////ブラシの作成
+		//hBrush = CreateSolidBrush(RED);
+		////ブラシを持ち替え
+		//hBrushOld = (HBRUSH)SelectObject(hDC, hBrush);
+
+		////四角を描画
+		////Rectangle(hDC, 340, 340, 460, 460);
+		////ブラシを戻す
+		//SelectObject(hDC, hBrushOld);
+		////作成したブラシの削除
+		//DeleteObject(hBrush);
 
 		//描画終了
 		EndPaint(hWnd, &ps);
@@ -237,64 +283,64 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 	}
 	case WM_KEYDOWN:	//キーが押下された
 	{
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-		{
-			int id = MessageBox(hWnd,
-				TEXT("終了しますか?"),
-				TEXT("確認"),
-				MB_YESNO);
-			if (id == IDYES) {
-				DestroyWindow(hWnd);
-			}
-		}
-		case VK_UP:
-			--g_MoveType;
-			TimeReset();
-			UpdateMoveType();
-			break;
-		case VK_DOWN:
-			++g_MoveType;
-			TimeReset();
-			UpdateMoveType();
-			break;
-		case VK_RIGHT:
-			if (g_MoveType == MOVE_TYPE::Oblique_Throw) {
-				g_theta -= 5.0f;
-				if (g_theta < 0.0f) {
-					g_theta = 355.0f;
-				}
-				g_Viewer.SetTheta(g_theta);
-				TimeReset();
-			}
-			break;
-		case VK_LEFT:
-			if (g_MoveType == MOVE_TYPE::Oblique_Throw) {
-				g_theta += 5.0f;
-				if (g_theta > 355.0f) {
-					g_theta = 0.0;
-				}
-				g_Viewer.SetTheta(g_theta);
-				TimeReset();
-			}
-			break;
-		case VK_NUMPAD1:
-			break;
-		case VK_NUMPAD2:
-			break;
-		case VK_NUMPAD3:
-			break;
-		case VK_NUMPAD4:
-			break;
-		case VK_NUMPAD5:
-			break;
-		case VK_SPACE:
-			TimeReset();
-			break;
-		default:
-			break;
-		}
+		//switch (wParam)
+		//{
+		//case VK_ESCAPE:
+		//{
+		//	int id = MessageBox(hWnd,
+		//		TEXT("終了しますか?"),
+		//		TEXT("確認"),
+		//		MB_YESNO);
+		//	if (id == IDYES) {
+		//		DestroyWindow(hWnd);
+		//	}
+		//}
+		//case VK_UP:
+		//	--g_MoveType;
+		//	TimeReset();
+		//	UpdateMoveType();
+		//	break;
+		//case VK_DOWN:
+		//	++g_MoveType;
+		//	TimeReset();
+		//	UpdateMoveType();
+		//	break;
+		//case VK_RIGHT:
+		//	if (g_MoveType == MOVE_TYPE::Oblique_Throw) {
+		//		g_theta -= 5.0f;
+		//		if (g_theta < 0.0f) {
+		//			g_theta = 355.0f;
+		//		}
+		//		g_Viewer.SetTheta(g_theta);
+		//		TimeReset();
+		//	}
+		//	break;
+		//case VK_LEFT:
+		//	if (g_MoveType == MOVE_TYPE::Oblique_Throw) {
+		//		g_theta += 5.0f;
+		//		if (g_theta > 355.0f) {
+		//			g_theta = 0.0;
+		//		}
+		//		g_Viewer.SetTheta(g_theta);
+		//		TimeReset();
+		//	}
+		//	break;
+		//case VK_NUMPAD1:
+		//	break;
+		//case VK_NUMPAD2:
+		//	break;
+		//case VK_NUMPAD3:
+		//	break;
+		//case VK_NUMPAD4:
+		//	break;
+		//case VK_NUMPAD5:
+		//	break;
+		//case VK_SPACE:
+		//	TimeReset();
+		//	break;
+		//default:
+		//	break;
+		//}
 	}
 	default:
 		break;
@@ -302,65 +348,65 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam,
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-void Init(void)
-{
-	for (auto&& c : g_Circle) {
-		c.SetPos(g_origin);
-		c.SetSize({ 15, 15 });
-	}
-
-	g_time       = 0.0f;
-	g_initvel    = INIT_VEL;
-	g_acc        = 0.0f;
-	g_gravityAcc = 0.0f;
-	g_theta      = 30.0f;
-
-	g_Viewer.SetTime(g_time);
-	g_Viewer.SetInitVel(g_initvel);
-	g_Viewer.SetAcc(g_acc);
-	g_Viewer.SetGravity(g_gravityAcc);
-}
-
-void TimeReset(void)
-{
-	g_time = 0.0f;
-}
-
-void UpdateMoveType(void)
-{
-	switch (g_MoveType) {
-	case MOVE_TYPE::Constant_Velocity:
-		g_initvel = INIT_VEL;
-		g_acc = 0.0f;
-		g_gravityAcc = 0.0f;
-		break;
-	case MOVE_TYPE::Constant_Acceleration:
-		g_initvel = INIT_VEL;
-		g_acc = ACCELERATION;
-		g_gravityAcc = 0.0f;
-		break;
-	case MOVE_TYPE::Free_Fall:
-		g_initvel = 0.0f;
-		g_acc = 0.0f;
-		g_gravityAcc = GRAVITY;
-		break;
-	case MOVE_TYPE::Vertical_Throw_Up:
-		g_initvel = 70.0f;
-		g_acc = 0.0f;
-		g_gravityAcc = GRAVITY;
-		break;
-	case MOVE_TYPE::Oblique_Throw:
-		g_initvel = 80.0f;
-		g_acc = 0.0f;
-		g_gravityAcc = GRAVITY;
-		break;
-	case MOVE_TYPE::END:
-		break;
-	default:
-		break;
-	}
-	g_Viewer.SetInitVel(g_initvel);
-	g_Viewer.SetAcc(g_acc);
-	g_Viewer.SetGravity(g_gravityAcc);
-	g_Viewer.SetTheta(g_theta);
-}
+//void Init(void)
+//{
+//	for (auto&& c : g_Circle) {
+//		c.SetPos(g_origin);
+//		c.SetSize({ 15, 15 });
+//	}
+//
+//	g_time       = 0.0f;
+//	g_initvel    = INIT_VEL;
+//	g_acc        = 0.0f;
+//	g_gravityAcc = 0.0f;
+//	g_theta      = 30.0f;
+//
+//	g_Viewer.SetTime(g_time);
+//	g_Viewer.SetInitVel(g_initvel);
+//	g_Viewer.SetAcc(g_acc);
+//	g_Viewer.SetGravity(g_gravityAcc);
+//}
+//
+//void TimeReset(void)
+//{
+//	g_time = 0.0f;
+//}
+//
+//void UpdateMoveType(void)
+//{
+//	switch (g_MoveType) {
+//	case MOVE_TYPE::Constant_Velocity:
+//		g_initvel = INIT_VEL;
+//		g_acc = 0.0f;
+//		g_gravityAcc = 0.0f;
+//		break;
+//	case MOVE_TYPE::Constant_Acceleration:
+//		g_initvel = INIT_VEL;
+//		g_acc = ACCELERATION;
+//		g_gravityAcc = 0.0f;
+//		break;
+//	case MOVE_TYPE::Free_Fall:
+//		g_initvel = 0.0f;
+//		g_acc = 0.0f;
+//		g_gravityAcc = GRAVITY;
+//		break;
+//	case MOVE_TYPE::Vertical_Throw_Up:
+//		g_initvel = 70.0f;
+//		g_acc = 0.0f;
+//		g_gravityAcc = GRAVITY;
+//		break;
+//	case MOVE_TYPE::Oblique_Throw:
+//		g_initvel = 80.0f;
+//		g_acc = 0.0f;
+//		g_gravityAcc = GRAVITY;
+//		break;
+//	case MOVE_TYPE::END:
+//		break;
+//	default:
+//		break;
+//	}
+//	g_Viewer.SetInitVel(g_initvel);
+//	g_Viewer.SetAcc(g_acc);
+//	g_Viewer.SetGravity(g_gravityAcc);
+//	g_Viewer.SetTheta(g_theta);
+//}
