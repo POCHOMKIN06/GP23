@@ -89,7 +89,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -117,26 +117,30 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\AxisLine.cpp" />
+    <ClCompile Include="Src\Begie.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\MoveType.cpp" />
     <ClCompile Include="Src\MovingCircle.cpp" />
     <ClCompile Include="Src\Vector.cpp" />
     <ClCompile Include="Src\Viewer.cpp" />
+    <ClCompile Include="Src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\AxisLine.h" />
+    <ClInclude Include="Src\Begie.h" />
     <ClInclude Include="Src\main.h" />
     <ClInclude Include="Src\MoveType.h" />
     <ClInclude Include="Src\MovingCircle.h" />
     <ClInclude Include="Src\Vector.h" />
     <ClInclude Include="Src\VIewer.h" />
+    <ClInclude Include="Src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
