@@ -76,6 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)GP23_WinAPI\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,6 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)GP23_WinAPI\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\AxisLine.cpp" />
+    <ClCompile Include="Src\BegieCurve.cpp" />
     <ClCompile Include="Src\main.cpp" />
     <ClCompile Include="Src\MoveType.cpp" />
     <ClCompile Include="Src\MovingCircle.cpp" />
@@ -133,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\AxisLine.h" />
+    <ClInclude Include="Src\BegieCurve.h" />
     <ClInclude Include="Src\main.h" />
     <ClInclude Include="Src\MoveType.h" />
     <ClInclude Include="Src\MovingCircle.h" />

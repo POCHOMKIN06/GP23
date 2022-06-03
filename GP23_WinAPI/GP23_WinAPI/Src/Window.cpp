@@ -1,21 +1,20 @@
 #include "Window.h"
 
+#include "BegieCurve.h"
 
-const TCHAR* Oshima::Window::ClassName = TEXT("サンプル");
+const TCHAR* Window::ClassName = TEXT("サンプル");
 
-#define DEVIDE_NUM (100)
-
-
+namespace{
 POINTFLOAT g_pos[4] = {
 	{100.0f, 400.0f},	//始点
 	{200.0f, 100.0f},	//中間点
 	{500.0f, 200.0f},	//中間点
 	{600.0f, 550.0f}	//終点
 };
-POINTFLOAT g_point[DEVIDE_NUM + 1] = { 0.0f, 0.0f };
+}
+BegieCurve BCurve;
 
-
-LRESULT Oshima::Window::WindowProc(HWND window_handle, UINT message_id, WPARAM wparam, LPARAM lparam)
+LRESULT Window::WindowProc(HWND window_handle, UINT message_id, WPARAM wparam, LPARAM lparam)
 {	
 	//標準オブジェクト
 	HDC hDC;			//デバイスコンテキストのハンドル
@@ -23,6 +22,11 @@ LRESULT Oshima::Window::WindowProc(HWND window_handle, UINT message_id, WPARAM w
 
 	switch (message_id)
 	{
+	case WM_CREATE:
+	{
+		BCurve.SetControlPoint(g_pos[0], g_pos[1], g_pos[2], g_pos[3], FALSE);
+		break;
+	}
 	case WM_PAINT:		//描画命令が出た
 	{
 		//描画開始
@@ -33,31 +37,10 @@ LRESULT Oshima::Window::WindowProc(HWND window_handle, UINT message_id, WPARAM w
 		//
 
 		//制御点の描画
-		MoveToEx(hDC, static_cast<int>(g_pos[0].x), static_cast<int>(g_pos[0].y), NULL);
-		for (int i = 0; i < sizeof(g_pos) / sizeof(POINTFLOAT); i++) {
-			LineTo(hDC, g_pos[i].x, g_pos[i].y);
-		}
+		BCurve.DrawControlPoint(hDC);
 
-		//曲線を計算
-		MoveToEx(hDC, static_cast<int>(g_pos[0].x), static_cast<int>(g_pos[0].y), NULL);
-		float t = 0.0f;
-		for (int i = 0; i <= DEVIDE_NUM; i++) {
-			g_point[i].x =
-				(1.0f - t)*(1.0f - t)*(1.0f - t)*g_pos[0].x
-				+ 3 * (1.0f - t)*(1.0f - t)*t*g_pos[1].x
-				+ 3 * (1.0f - t)*t*t*g_pos[2].x
-				+ t * t*t*g_pos[3].x;
-			g_point[i].y =
-				(1.0f - t)*(1.0f - t)*(1.0f - t)*g_pos[0].y
-				+ 3 * (1.0f - t)*(1.0f - t)*t*g_pos[1].y
-				+ 3 * (1.0f - t)*t*t*g_pos[2].y
-				+ t * t*t*g_pos[3].y;
-			t += 1.0f / DEVIDE_NUM;
-		}
-
-		for (int i = 0; i <= DEVIDE_NUM; i++) {
-			LineTo(hDC, g_point[i].x, g_point[i].y);
-		}
+		//曲線を描画
+		BCurve.Draw(hDC);
 
 		//描画終了
 		EndPaint(window_handle, &ps);
@@ -75,7 +58,7 @@ LRESULT Oshima::Window::WindowProc(HWND window_handle, UINT message_id, WPARAM w
 	return 0;
 }
 
-bool Oshima::Window::Create()
+bool Window::Create()
 {
 	if (EntryWindowClass() == false)
 	{
@@ -106,7 +89,7 @@ bool Oshima::Window::Create()
 	return true;
 }
 
-bool Oshima::Window::EntryWindowClass()
+bool Window::EntryWindowClass()
 {
 	WNDCLASSEX window_class = {
 		sizeof(WNDCLASSEX),				// 構造体のサイズ
@@ -132,7 +115,7 @@ bool Oshima::Window::EntryWindowClass()
 	return true;
 }
 
-void Oshima::Window::ResizeWindow(HWND window_handle)
+void Window::ResizeWindow(HWND window_handle)
 {
 	RECT window_rect;
 	RECT client_rect;
