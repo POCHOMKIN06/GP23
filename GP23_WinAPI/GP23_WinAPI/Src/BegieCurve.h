@@ -11,7 +11,6 @@ public:
 		CulcuPoint_ = new POINTFLOAT[DevideNum_ + 1];
 		ControlPoint_[0] = ControlPoint_[1] = ControlPoint_[2] = ControlPoint_[3]
 		= { 0.0f, 0.0f };
-
 	}
 	~BegieCurve()
 	{

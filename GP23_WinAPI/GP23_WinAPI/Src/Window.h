@@ -17,7 +17,7 @@ public:
 	* @param[in] lparam イベント情報
 	* @return メッセージ処理結果
 	*/
-	static LRESULT CALLBACK WindowProc(HWND window_handle, UINT message_id, WPARAM wparam, LPARAM lparam);
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 public:
 	/*
 	* @brief Constructor
@@ -59,7 +59,7 @@ private:
 	* 生成後にクライアント領域のサイズにリサイズする
 	* @param[in] リサイズ対象となるウィンドウハンドル
 	*/
-	void ResizeWindow(HWND window_handle);
+	void ResizeWindow(HWND hWnd);
 
 private:
 	HWND WindowHandle_;		//!< @brief ウィンドウハンドル

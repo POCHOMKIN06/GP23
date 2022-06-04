@@ -1,4 +1,5 @@
 #pragma once
+//#define STRICT				// Windowsプログラムに対する「型保証」を強化
 #include <Windows.h>
 #include <tchar.h>
 
@@ -9,10 +10,10 @@
 
 // マクロ定義
 #define CLASS_NAME	TEXT("サンプル")
-#define WINDOW_NAME	TEXT("ベジエ曲線")
+#define WINDOW_NAME	TEXT("[ GP23 Hermite2 ]")
 
-#define SCREEN_WIDTH	(1280)	// ウィンドウの幅
-#define SCREEN_HEIGHT	(640)	// ウィンドウの高さ
+const UINT	SCREEN_WIDTH  = 1280;				// スクリーン＆ビットマップ幅
+const UINT	SCREEN_HEIGHT = 640;				// スクリーン＆ビットマップ高さ
 
 #define FPS		(20)	//更新FPS
 
