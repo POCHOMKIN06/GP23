@@ -42,14 +42,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -76,6 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)GP23_WinAPI\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -100,6 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)GP23_WinAPI\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -124,8 +126,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Src\AxisLine.cpp" />
-    <ClCompile Include="Src\Begie.cpp" />
+    <ClCompile Include="Src\BegieCurve.cpp" />
+    <ClCompile Include="Src\HermitianCurve.cpp" />
+    <ClCompile Include="Src\input.cpp" />
+    <ClCompile Include="Src\Laser.cpp" />
     <ClCompile Include="Src\main.cpp" />
+    <ClCompile Include="Src\MovableHermitianCurve.cpp" />
     <ClCompile Include="Src\MoveType.cpp" />
     <ClCompile Include="Src\MovingCircle.cpp" />
     <ClCompile Include="Src\Vector.cpp" />
@@ -134,8 +140,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\AxisLine.h" />
-    <ClInclude Include="Src\Begie.h" />
+    <ClInclude Include="Src\BegieCurve.h" />
+    <ClInclude Include="Src\HermitianCurve.h" />
+    <ClInclude Include="Src\input.h" />
+    <ClInclude Include="Src\Laser.h" />
     <ClInclude Include="Src\main.h" />
+    <ClInclude Include="Src\MovableHermitianCurve.h" />
     <ClInclude Include="Src\MoveType.h" />
     <ClInclude Include="Src\MovingCircle.h" />
     <ClInclude Include="Src\Vector.h" />

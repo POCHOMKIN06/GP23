@@ -1,174 +1,236 @@
 #include "Window.h"
 
 #include "main.h"
+#include "input.h"
 
-const TCHAR* Oshima::Window::ClassName = TEXT("ぶつかってはじけろ！");
+#include "BegieCurve.h"
+#include "HermitianCurve.h"
+#include "Laser.h"
+#include "MovableHermitianCurve.h"
 
-static POINTFLOAT	g_pos[2] = {
-	{100.0f, SCREEN_HEIGHT / 2 + 100.0f},	// 1
-	{100.0f, SCREEN_HEIGHT / 2 - 100.0f}	// 2
-};
-static POINTFLOAT	g_size = { 20.0f, 20.0f };	// サイズ
-static POINTFLOAT	g_vel[2] = {	// 速度
-	{5.0f, -5.0f},
-	{5.0f, 5.0f}
-};
-static float	g_mass[2] = { 40.0f, 60.0f };	// 質量
-#define BOUNCE_COEFFICIENT	(0.8f)			// 跳ね返り係数
-static COLORREF	g_color[2] = {
-	RGB(0,255,255),
-	RGB(255,0,255)
+const TCHAR* Window::ClassName = TEXT("サンプル");
+
+//マクロ定義
+#define IDT_TIMER1	(100)
+
+POINTFLOAT g_pos[4] = {
+	{100.0f, 400.0f},	//始点
+	{200.0f, 100.0f},	//中間点
+	{500.0f, 200.0f},	//中間点
+	{600.0f, 550.0f}	//終点
 };
 
-LRESULT CALLBACK Oshima::Window::WindowProc(HWND window_handle, UINT message_id, WPARAM wparam, LPARAM lparam)
-{	
+
+enum _bmp {
+	BMP_BG = 0,		// 0
+	BMP_PLAYER,		// 1
+	BMP_ENEMY,		// 2
+	BMP_QTY,		// 3 BMPの総数を示す
+};
+
+LPCTSTR		bmp_file[] = {
+	_T("Bmp/bg.bmp"),		// 0 ＢＧ
+	_T("Bmp/player.bmp"),	// 1 自機
+	_T("Bmp/enemy.bmp"),	// 2 敵機
+};
+
+const UINT	MOVE_SPEED = 8;				// 自機移動スピード
+const UINT	BG_W = 640;					// ＢＧ　幅
+const UINT	BG_H = 480;					// ＢＧ　高さ
+const UINT	PLAYER_W = 48;				// 自機　幅
+const UINT	PLAYER_H = 32;				// 自機　高さ
+const UINT	ENEMY_W = 32;				// 敵機　幅
+const UINT	ENEMY_H = 32;				// 敵機　高さ
+const UINT	CURVE_DIV = 10;				// 曲線分割数
+
+const float	PLAYER_VECTOR_X = -500.0f;		// 自機側　接線ベクトル　Ｘ成分
+const float	PLAYER_VECTOR_Y = -500.0f;		// 自機側　接線ベクトル　Ｙ成分
+const float	ENEMY_VECTOR_X = 300.0f;		// 敵機側　接線ベクトル　Ｘ成分
+const float	ENEMY_VECTOR_Y = 200.0f;		// 敵機側　接線ベクトル　Ｙ成分
+
+//-------- 構造体定義
+//struct LASER {
+//	int		status;							// ステータス
+//	int		start;							// レーザー開始インデックス
+//	int		end;							// レーザー終了インデックス
+//	POINTFLOAT	curve_pt[CURVE_DIV + 1];	// エルミート曲線上の座標
+//};
+
+//BegieCurve BCurve;
+
+HDC			g_hMemDC[BMP_QTY];				// メモリＤＣ（ＢＭＰ保持用）
+int			player_x, player_y;				// 自機座標
+int			enemy_x, enemy_y;				// 敵機座標
+
+//LASER		laser;							// レーザー
+
+Laser laser;
+MovableHermitianCurve MHCurve;
+
+int at;
+
+LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
 	//標準オブジェクト
-	HDC hDC;			//デバイスコンテキストのハンドル
-	PAINTSTRUCT ps;		//クライアント領域に描画する時に必要な構造体
-	char str[256];		// 文字列表示用
-	HPEN hPen;			// ペンオブジェクト
-	HPEN hPenOld;		// 変更前のペンオブジェクト保存用
-	HBRUSH hBrush;		// ブラシオブジェクト
-	HBRUSH hBrushOld;	// 変更前のブラシオブジェクト保存用
+	HDC			hdc;			// デバイスコンテキストハンドル
+	HBITMAP		hDstBmp;		// ビットマップハンドル
+	PAINTSTRUCT	ps;				//クライアント領域に描画する時に必要な構造体
+	int			i;
 
-	switch (message_id)
+	switch (uMsg)
 	{
+	case WM_CREATE:
+	{
+		//BCurve.SetControlPoint(g_pos[0], g_pos[1], g_pos[2], g_pos[3], FALSE);
+
+		// ビットマップファイルをロード
+		hdc = GetDC(hWnd);
+		for (i = 0; i < BMP_QTY; i++) {
+			hDstBmp = (HBITMAP)LoadImage((HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE), bmp_file[i], IMAGE_BITMAP, 0, 0,
+				LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+			g_hMemDC[i] = CreateCompatibleDC(hdc);				// メモリＤＣを作成
+			SelectObject(g_hMemDC[i], hDstBmp);					// ビットマップを選択
+			DeleteObject(hDstBmp);								// ロードしたビットマップを破棄
+		}
+		ReleaseDC(hWnd, hdc);
+
+		// 変数初期化
+		player_x = 120;
+		player_y = 240;
+		enemy_x = 550;
+		enemy_y = 240;
+
+		at = 270;
+
+		if (laser.Create(10,
+			POINTFLOAT{ (float)player_x, (float)player_y }, POINTFLOAT{ PLAYER_VECTOR_X, PLAYER_VECTOR_Y },
+			POINTFLOAT{ (float)enemy_x,  (float)enemy_y }, POINTFLOAT{ ENEMY_VECTOR_X, ENEMY_VECTOR_Y })
+			== FALSE) {
+			MessageBox(hWnd, TEXT("laserの生成に失敗"), TEXT("生成エラー"), MB_OK);
+			PostMessage(hWnd, WM_DESTROY, NULL, NULL);
+			break;
+		}
+
+
+		if (MHCurve.Create(20,
+			POINTFLOAT{ 100.0f, 340.0f }, POINTFLOAT{ 200.0f, 100.0f },
+			POINTFLOAT{ 320.0f,  80.0f }, POINTFLOAT{ 200.0f, 100.0f })
+			== FALSE) {
+			MessageBox(hWnd, TEXT("MHCurveの生成に失敗"), TEXT("生成エラー"), MB_OK);
+			PostMessage(hWnd, WM_DESTROY, NULL, NULL);
+			break;
+		}
+
+		SetTimer(hWnd, IDT_TIMER1, 1000/FPS, NULL);	//第3引数:50ms(1000/20fps)
+
+		return 0;
+	}
 	case WM_TIMER:
 	{
-		for (int i = 0; i < 2; i++) {
-			g_pos[i].x += g_vel[i].x;
-			g_pos[i].y += g_vel[i].y;
+		// 自機を操作
+		if (GetAsyncKeyState(VK_W)) player_y -= MOVE_SPEED;
+		if (GetAsyncKeyState(VK_S)) player_y += MOVE_SPEED;
+		if (GetAsyncKeyState(VK_A)) player_x -= MOVE_SPEED;
+		if (GetAsyncKeyState(VK_D)) player_x += MOVE_SPEED;
+		// 敵機を操作
+		if (GetAsyncKeyState(VK_UP))	enemy_y -= MOVE_SPEED;
+		if (GetAsyncKeyState(VK_DOWN))	enemy_y += MOVE_SPEED;
+		if (GetAsyncKeyState(VK_LEFT))	enemy_x -= MOVE_SPEED;
+		if (GetAsyncKeyState(VK_RIGHT))	enemy_x += MOVE_SPEED;
+
+		laser.Update(POINTFLOAT{ (float)player_x, (float)player_y }, POINTFLOAT{ (float)enemy_x, (float)enemy_y });
+
+		using LS = Laser::STATUS;
+		if (GetAsyncKeyState(VK_SPACE) && laser.GetStatus() == LS::STANDBY) laser.SetStatus(LS::SHOOT);	// レーザーを発射
+
+		at -= 5;
+		if (at <= 0) {
+			at = 270;
 		}
-
-		// 当たり判定BC
-		float fx = g_pos[0].x - g_pos[1].x;
-		float fy = g_pos[0].y - g_pos[1].y;
-		float flen = fx * fx + fy * fy;
-		static bool isHit = false;	// 連続ヒット防止用
-		if (isHit == false && flen <= (g_size.x / 2 + g_size.x / 2) * (g_size.x / 2 + g_size.x / 2)) {
-			isHit = true;
-			// 衝突後の速度計算
-			POINTFLOAT v1New, v2New;
-			v1New.x = ((g_mass[0] - BOUNCE_COEFFICIENT * g_mass[1]) * g_vel[0].x + (1.0f + BOUNCE_COEFFICIENT) * g_mass[1] * g_vel[1].x) / (g_mass[0] + g_mass[1]);
-			v1New.y = ((g_mass[0] - BOUNCE_COEFFICIENT * g_mass[1]) * g_vel[0].y + (1.0f + BOUNCE_COEFFICIENT) * g_mass[1] * g_vel[1].y) / (g_mass[0] + g_mass[1]);
-			v2New.x = ((g_mass[1] - BOUNCE_COEFFICIENT * g_mass[0]) * g_vel[1].x + (1.0f + BOUNCE_COEFFICIENT) * g_mass[0] * g_vel[0].x) / (g_mass[0] + g_mass[1]);
-			v2New.y = ((g_mass[1] - BOUNCE_COEFFICIENT * g_mass[0]) * g_vel[1].y + (1.0f + BOUNCE_COEFFICIENT) * g_mass[0] * g_vel[0].y) / (g_mass[0] + g_mass[1]);
-
-			// 格納
-			g_vel[0].x = v1New.x;
-			g_vel[0].y = v1New.y;
-			g_vel[1].x = v2New.x;
-			g_vel[1].y = v2New.y;
-		} else {
-			isHit = false;
+		// 再描画を要求
+		InvalidateRect(hWnd, NULL, FALSE);
+		return 0;
+	}
+	case WM_KEYDOWN:
+	{
+		switch (wParam) {
+		case VK_ESCAPE:
+			KillTimer(hWnd, IDT_TIMER1);
+			int ret = MessageBox(hWnd, _T("終了しますか?"), _T("終了確認"), MB_OKCANCEL);
+			if (ret == IDOK) {
+				DestroyWindow(hWnd);	// ウィンドウ破棄を指示
+			} else {
+				SetTimer(hWnd, IDT_TIMER1, 1000 / FPS, NULL);
+			}
+			return 0;
 		}
-
-		// 再描画を指示
-		RECT rect = { 0, 0, SCREEN_WIDTH,SCREEN_HEIGHT };
-		InvalidateRect(window_handle, &rect, TRUE);
-
 		break;
 	}
 	case WM_PAINT:		//描画命令が出た
 	{
 		//描画開始
-		hDC = BeginPaint(window_handle, &ps);
+		hdc = BeginPaint(hWnd, &ps);
 
-		// テキストを表示
-		wsprintf(str, "SPACEでリセット");	// バッファに格納
-		//				座標		　文字列と長さ
-		TextOut(hDC, 100, 100, str, strlen(str));
-		// テキストを表示
-		wsprintf(str, "→：次の運動、←：前の運動");	// バッファに格納
-		//				座標		　文字列と長さ
-		TextOut(hDC, 100, 120, str, strlen(str));
+		//------------------------------------------
+		// ベジエ曲線の描画
+		//------------------------------------------
+		//// 制御点の描画
+		//BCurve.DrawControlPoint(hdc);
+		//// 曲線を描画
+		//BCurve.Draw(hdc);
 
-		//// テキストの色を変更
-		//SetTextColor(hDC, RGB(255, 0, 0));
-		//TextOut(hDC, 300, 200, str, strlen(str));
 
-		// 中心
-		MoveToEx(hDC, SCREEN_WIDTH / 2, 0, NULL);		// 始点
-		LineTo(hDC, SCREEN_WIDTH / 2, SCREEN_HEIGHT);	// 次の点
-		MoveToEx(hDC, 0, SCREEN_HEIGHT / 2, NULL);		// 始点
-		LineTo(hDC, SCREEN_WIDTH, SCREEN_HEIGHT / 2);	// 終点
+		BitBlt(hdc, 0, 0, BG_W, BG_H, g_hMemDC[BMP_BG], 0, 0, SRCCOPY);	// ＢＧ描画
+		BitBlt(hdc, player_x, player_y, PLAYER_W, PLAYER_H, g_hMemDC[BMP_PLAYER], 0, 0, SRCCOPY);	// 自機描画
+		BitBlt(hdc, enemy_x, enemy_y, ENEMY_W, ENEMY_H, g_hMemDC[BMP_ENEMY], 0, 0, SRCCOPY);	// 敵機描画
 
-		for (int i = 0; i < 2; i++) {
-			// ペンを作成
-			//							太さ		色
-			hPen = CreatePen(PS_SOLID, 3, g_color[i]);
-			// ペンの持ち替え
-			hPenOld = (HPEN)SelectObject(hDC, hPen);
-			// 円を描画
-			Ellipse(hDC,
-				// 座標+-サイズの半分
-				(int)(g_pos[i].x - g_size.x / 2),	// 左
-				(int)(g_pos[i].y - g_size.y / 2),	// 上
-				(int)(g_pos[i].x + g_size.x / 2),	// 右
-				(int)(g_pos[i].y + g_size.y / 2));	// 下
-			// ペンを戻す
-			SelectObject(hDC, hPenOld);
-			// 作成したペンの削除
-			DeleteObject(hPen);
-		}
+		// レーザーを描画
 
-		// ブラシ作成
-		hBrush = CreateSolidBrush(RGB(0, 0, 255));	// 色
-		// ブラシ持ち替え
-		hBrushOld = (HBRUSH)SelectObject(hDC, hBrush);
-		//// 四角形を描画
-		////				左	上	右	下
-		//Rectangle(hDC, 340, 340, 460, 460);
-		// ブラシを戻す
-		SelectObject(hDC, hBrushOld);
-		// 作成したブラシの削除
-		DeleteObject(hBrush);
+		//----------------------------------------------------------------
+		//  ここにエルミート曲線を使った式を書いて
+		//  曲線レーザーを描画させる
+		//----------------------------------------------------------------
+		laser.Draw(hdc);
 
+		MHCurve.Draw(hdc);
+
+		HPEN old = (HPEN)SelectObject(hdc, CreatePen(PS_SOLID, 2, RGB(255, 0, 0)));
+		MoveToEx(hdc, 100+50 * cos(45), 100-50 * sin(45), NULL);
+		Rectangle(hdc, 210, 10, 400, 200);
+		HBRUSH oldb = (HBRUSH)SelectObject(hdc, CreateSolidBrush(RGB(0, 150, 150)));
+		AngleArc(hdc, 100, 100, 50, 45, at);
+		Pie(hdc, 210, 10, 400, 200, 0, 100, 310, 0);
+		DeleteObject(SelectObject(hdc, old));
+		DeleteObject(SelectObject(hdc, oldb));
 
 		//描画終了
-		EndPaint(window_handle, &ps);
+		EndPaint(hWnd, &ps);
 		break;
-	}
-	case WM_KEYDOWN:
-	{
-		switch (wparam) {
-		case VK_SPACE:
-			// リセット
-			break;
-		case VK_RIGHT:
-			// リセット
-			break;
-		case VK_LEFT:
-			// リセット
-			break;
-		case VK_ESCAPE:
-			{
-				int id = MessageBox(window_handle, "終了しますか？", "確認", MB_YESNO);
-				if (id == IDYES) {
-					DestroyWindow(window_handle);
-				}
-				break;
-			}
-		}
-		break;
+		
 	}
 	case WM_CLOSE:
-		PostQuitMessage(0);
-		break;
-	case WM_DESTROY:	// ウィンドウ破棄のメッセージ
-		PostQuitMessage(0);
-		break;
+	{
+		for (i = 0; i < BMP_QTY; i++) {
+			DeleteDC(g_hMemDC[i]);				// メモリＤＣを削除
+		}
+		DestroyWindow(hWnd);
+		return 0;
+	}
+	case WM_DESTROY:							// 終了指示がきた
+	{
+		KillTimer(hWnd, IDT_TIMER1);			// タイマーを停止
+		PostQuitMessage(0);						// システムにスレッドの終了を要求
+		return 0;
+	}
 	default:
-		return DefWindowProc(window_handle, message_id, wparam, lparam);
 		break;
 	}
-
-	return 0;
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-bool Oshima::Window::Create()
+bool Window::Create()
 {
-	if (EntryWindowClass() == FALSE)
+	if (EntryWindowClass() == false)
 	{
 		return false;
 	}
@@ -197,7 +259,7 @@ bool Oshima::Window::Create()
 	return true;
 }
 
-bool Oshima::Window::EntryWindowClass()
+bool Window::EntryWindowClass()
 {
 	WNDCLASSEX window_class = {
 		sizeof(WNDCLASSEX),				// 構造体のサイズ
@@ -223,7 +285,7 @@ bool Oshima::Window::EntryWindowClass()
 	return true;
 }
 
-void Oshima::Window::ResizeWindow(HWND window_handle)
+void Window::ResizeWindow(HWND window_handle)
 {
 	RECT window_rect;
 	RECT client_rect;

@@ -13,57 +13,93 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{ed313423-6b76-46c9-91dd-136214c7d33c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="k05_運動してる%3f">
+      <UniqueIdentifier>{354fef85-2b1c-45ba-bd13-f07f86ac6c73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="k01_曲線美の追求">
+      <UniqueIdentifier>{e3acab24-bfa8-4ebb-b229-133a5eaf9482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{721e7b5a-f618-4861-81bb-b7d0b57349f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Src\main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\AxisLine.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\MoveType.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\MovingCircle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Vector.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Src\main.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MoveType.cpp">
+      <Filter>k05_運動してる%3f</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MovingCircle.cpp">
+      <Filter>k05_運動してる%3f</Filter>
+    </ClCompile>
     <ClCompile Include="Src\Viewer.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>k05_運動してる%3f</Filter>
     </ClCompile>
     <ClCompile Include="Src\Window.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Begie.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="Src\AxisLine.cpp">
+      <Filter>k05_運動してる%3f</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\BegieCurve.cpp">
+      <Filter>k01_曲線美の追求</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\HermitianCurve.cpp">
+      <Filter>k01_曲線美の追求</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Laser.cpp">
+      <Filter>k01_曲線美の追求</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\input.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\MovableHermitianCurve.cpp">
+      <Filter>k01_曲線美の追求</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Src\main.h">
+      <Filter>Main</Filter>
+    </ClInclude>
     <ClInclude Include="Src\MoveType.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>k05_運動してる%3f</Filter>
     </ClInclude>
     <ClInclude Include="Src\MovingCircle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Vector.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>k05_運動してる%3f</Filter>
     </ClInclude>
     <ClInclude Include="Src\VIewer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\AxisLine.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\main.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>k05_運動してる%3f</Filter>
     </ClInclude>
     <ClInclude Include="Src\Window.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Begie.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Src\AxisLine.h">
+      <Filter>k05_運動してる%3f</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\BegieCurve.h">
+      <Filter>k01_曲線美の追求</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\HermitianCurve.h">
+      <Filter>k01_曲線美の追求</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Laser.h">
+      <Filter>k01_曲線美の追求</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\input.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Vector.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\MovableHermitianCurve.h">
+      <Filter>k01_曲線美の追求</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
