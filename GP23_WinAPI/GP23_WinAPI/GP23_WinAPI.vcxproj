@@ -137,6 +137,7 @@
     <ClCompile Include="Src\Vector.cpp" />
     <ClCompile Include="Src\Viewer.cpp" />
     <ClCompile Include="Src\Window.cpp" />
+    <ClCompile Include="Src\Window2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\AxisLine.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="Src\Vector.h" />
     <ClInclude Include="Src\VIewer.h" />
     <ClInclude Include="Src\Window.h" />
+    <ClInclude Include="Src\Window2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

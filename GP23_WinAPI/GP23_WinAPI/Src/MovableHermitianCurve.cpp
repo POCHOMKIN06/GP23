@@ -71,7 +71,7 @@ void MovableHermitianCurve::Draw(HDC hdc)
 	}
 	
 	// §Œä“_À•W‚Ì•¶Žš•\Ž¦
-	COLORREF DefaultC = SetTextColor(hdc, RGB(255, 255, 255));
+	COLORREF DefaultC = SetTextColor(hdc, (COLORREF)GetStockObject(BLACK_PEN));
 	TEXTMETRIC tm;
 	GetTextMetrics(hdc, &tm);
 	_TCHAR str[256];
@@ -103,4 +103,78 @@ void MovableHermitianCurve::Draw(HDC hdc)
 	DeleteObject(SelectObject(hdc, hDefalutBrush));
 
 #undef SC_I
+}
+
+BOOL MovableHermitianCurve::CheckMousePos(const int m_x, const int m_y, int * out)
+{
+	typedef struct _ControlPos {
+		POINTFLOAT s_pos;
+		POINTFLOAT s_vec_pos;
+		POINTFLOAT e_pos;
+		POINTFLOAT e_vec_pos;
+	}ContPos;
+
+	HermitianCurve::Params ps = HCurve_->GetParams();
+	ContPos cp = {
+		ps.s_pos,
+		POINTFLOAT{ ps.s_pos.x + ps.s_vec.x , ps.s_pos.y + ps.s_vec.y },
+		ps.e_pos,
+		POINTFLOAT{ ps.e_pos.x + ps.e_vec.x , ps.e_pos.y + ps.e_vec.y }
+	};
+
+	RECT c_rect[4];
+	c_rect[0] = RECT{ (int)(cp.s_pos.x + Rect_.left),		(int)(cp.s_pos.y + Rect_.top),	   (int)(cp.s_pos.x + Rect_.right),		(int)(cp.s_pos.y + Rect_.bottom) };
+	c_rect[1] = RECT{ (int)(cp.s_vec_pos.x + Rect_.left),	(int)(cp.s_vec_pos.y + Rect_.top), (int)(cp.s_vec_pos.x + Rect_.right), (int)(cp.s_vec_pos.y + Rect_.bottom) };
+	c_rect[2] = RECT{ (int)(cp.e_pos.x + Rect_.left),		(int)(cp.e_pos.y + Rect_.top),	   (int)(cp.e_pos.x + Rect_.right),		(int)(cp.e_pos.y + Rect_.bottom) };
+	c_rect[3] = RECT{ (int)(cp.e_vec_pos.x + Rect_.left),	(int)(cp.e_vec_pos.y + Rect_.top), (int)(cp.e_vec_pos.x + Rect_.right), (int)(cp.e_vec_pos.y + Rect_.bottom) };
+
+	if (m_x >= c_rect[0].left && m_x <= c_rect[0].right
+		&& m_y >= c_rect[0].top && m_y <= c_rect[0].bottom) {
+		*out = 0;
+		return TRUE;
+	}
+	if (m_x >= c_rect[1].left && m_x <= c_rect[1].right
+		&& m_y >= c_rect[1].top && m_y <= c_rect[1].bottom) {
+		*out = 1;
+		return TRUE;
+	}
+	if (m_x >= c_rect[2].left && m_x <= c_rect[2].right
+		&& m_y >= c_rect[2].top && m_y <= c_rect[2].bottom) {
+		*out = 2;
+		return TRUE;
+	}
+	if (m_x >= c_rect[3].left && m_x <= c_rect[3].right
+		&& m_y >= c_rect[3].top && m_y <= c_rect[3].bottom) {
+		*out = 3;
+		return TRUE;
+	}
+
+	//*out = -1;
+	return FALSE;
+}
+
+void MovableHermitianCurve::MovePos(const POINTFLOAT new_pos, int type)
+{
+	switch (type) {
+	case 0:	// s_pos
+		HCurve_->SetSPos(new_pos);
+		break;
+	case 1:	// s_vec
+	{
+		HermitianCurve::Params ps = HCurve_->GetParams();
+		HCurve_->SetSVec(POINTFLOAT{ new_pos.x - ps.s_pos.x, new_pos.y - ps.s_pos.y });
+	}
+		break;
+	case 2:	// e_pos
+		HCurve_->SetEPos(new_pos);
+		break;
+	case 3:	// e_vec
+	{	
+		HermitianCurve::Params ps = HCurve_->GetParams();
+		HCurve_->SetEVec(POINTFLOAT{ new_pos.x - ps.e_pos.x, new_pos.y - ps.e_pos.y });
+	}
+		break;
+	default:
+		break;
+	}
 }

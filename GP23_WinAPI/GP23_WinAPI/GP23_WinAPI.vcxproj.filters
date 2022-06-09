@@ -63,6 +63,9 @@
     <ClCompile Include="Src\MovableHermitianCurve.cpp">
       <Filter>k01_曲線美の追求</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Window2.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\main.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="Src\MovableHermitianCurve.h">
       <Filter>k01_曲線美の追求</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Window2.h">
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

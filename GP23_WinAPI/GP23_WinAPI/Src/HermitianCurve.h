@@ -15,7 +15,7 @@ public:
 		POINTFLOAT e_vec;
 	} Params;
 protected:
-	HermitianCurve();
+	HermitianCurve();	// プロテクトコンストラクタ
 public:
 	~HermitianCurve();
 

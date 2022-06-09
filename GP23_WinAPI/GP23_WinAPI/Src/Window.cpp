@@ -12,63 +12,64 @@ const TCHAR* Window::ClassName = TEXT("サンプル");
 
 //マクロ定義
 #define IDT_TIMER1	(100)
+namespace
+{
+	POINTFLOAT g_pos[4] = {
+		{100.0f, 400.0f},	//始点
+		{200.0f, 100.0f},	//中間点
+		{500.0f, 200.0f},	//中間点
+		{600.0f, 550.0f}	//終点
+	};
 
-POINTFLOAT g_pos[4] = {
-	{100.0f, 400.0f},	//始点
-	{200.0f, 100.0f},	//中間点
-	{500.0f, 200.0f},	//中間点
-	{600.0f, 550.0f}	//終点
-};
 
+	enum _bmp {
+		BMP_BG = 0,		// 0
+		BMP_PLAYER,		// 1
+		BMP_ENEMY,		// 2
+		BMP_QTY,		// 3 BMPの総数を示す
+	};
 
-enum _bmp {
-	BMP_BG = 0,		// 0
-	BMP_PLAYER,		// 1
-	BMP_ENEMY,		// 2
-	BMP_QTY,		// 3 BMPの総数を示す
-};
+	LPCTSTR		bmp_file[] = {
+		_T("Bmp/bg.bmp"),		// 0 ＢＧ
+		_T("Bmp/player.bmp"),	// 1 自機
+		_T("Bmp/enemy.bmp"),	// 2 敵機
+	};
 
-LPCTSTR		bmp_file[] = {
-	_T("Bmp/bg.bmp"),		// 0 ＢＧ
-	_T("Bmp/player.bmp"),	// 1 自機
-	_T("Bmp/enemy.bmp"),	// 2 敵機
-};
+	const UINT	MOVE_SPEED = 8;				// 自機移動スピード
+	const UINT	BG_W = 640;					// ＢＧ　幅
+	const UINT	BG_H = 480;					// ＢＧ　高さ
+	const UINT	PLAYER_W = 48;				// 自機　幅
+	const UINT	PLAYER_H = 32;				// 自機　高さ
+	const UINT	ENEMY_W = 32;				// 敵機　幅
+	const UINT	ENEMY_H = 32;				// 敵機　高さ
+	const UINT	CURVE_DIV = 10;				// 曲線分割数
 
-const UINT	MOVE_SPEED = 8;				// 自機移動スピード
-const UINT	BG_W = 640;					// ＢＧ　幅
-const UINT	BG_H = 480;					// ＢＧ　高さ
-const UINT	PLAYER_W = 48;				// 自機　幅
-const UINT	PLAYER_H = 32;				// 自機　高さ
-const UINT	ENEMY_W = 32;				// 敵機　幅
-const UINT	ENEMY_H = 32;				// 敵機　高さ
-const UINT	CURVE_DIV = 10;				// 曲線分割数
+	const float	PLAYER_VECTOR_X = -500.0f;		// 自機側　接線ベクトル　Ｘ成分
+	const float	PLAYER_VECTOR_Y = -500.0f;		// 自機側　接線ベクトル　Ｙ成分
+	const float	ENEMY_VECTOR_X = 300.0f;		// 敵機側　接線ベクトル　Ｘ成分
+	const float	ENEMY_VECTOR_Y = 200.0f;		// 敵機側　接線ベクトル　Ｙ成分
 
-const float	PLAYER_VECTOR_X = -500.0f;		// 自機側　接線ベクトル　Ｘ成分
-const float	PLAYER_VECTOR_Y = -500.0f;		// 自機側　接線ベクトル　Ｙ成分
-const float	ENEMY_VECTOR_X = 300.0f;		// 敵機側　接線ベクトル　Ｘ成分
-const float	ENEMY_VECTOR_Y = 200.0f;		// 敵機側　接線ベクトル　Ｙ成分
+	//-------- 構造体定義
+	//struct LASER {
+	//	int		status;							// ステータス
+	//	int		start;							// レーザー開始インデックス
+	//	int		end;							// レーザー終了インデックス
+	//	POINTFLOAT	curve_pt[CURVE_DIV + 1];	// エルミート曲線上の座標
+	//};
 
-//-------- 構造体定義
-//struct LASER {
-//	int		status;							// ステータス
-//	int		start;							// レーザー開始インデックス
-//	int		end;							// レーザー終了インデックス
-//	POINTFLOAT	curve_pt[CURVE_DIV + 1];	// エルミート曲線上の座標
-//};
+	//BegieCurve BCurve;
 
-//BegieCurve BCurve;
+	HDC			g_hMemDC[BMP_QTY];				// メモリＤＣ（ＢＭＰ保持用）
+	int			player_x, player_y;				// 自機座標
+	int			enemy_x, enemy_y;				// 敵機座標
 
-HDC			g_hMemDC[BMP_QTY];				// メモリＤＣ（ＢＭＰ保持用）
-int			player_x, player_y;				// 自機座標
-int			enemy_x, enemy_y;				// 敵機座標
+	//LASER		laser;							// レーザー
 
-//LASER		laser;							// レーザー
+	Laser laser;
+	static MovableHermitianCurve MHCurve1;
 
-Laser laser;
-MovableHermitianCurve MHCurve;
-
-int at;
-
+	int at;
+}
 LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	//標準オブジェクト
@@ -76,6 +77,9 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	HBITMAP		hDstBmp;		// ビットマップハンドル
 	PAINTSTRUCT	ps;				//クライアント領域に描画する時に必要な構造体
 	int			i;
+	static unsigned short int mouse_x = -10, mouse_y = 10;
+	TCHAR str[256];
+	static int check = -1;
 
 	switch (uMsg)
 	{
@@ -111,8 +115,7 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 
-
-		if (MHCurve.Create(20,
+		if (MHCurve1.Create(20,
 			POINTFLOAT{ 100.0f, 340.0f }, POINTFLOAT{ 200.0f, 100.0f },
 			POINTFLOAT{ 320.0f,  80.0f }, POINTFLOAT{ 200.0f, 100.0f })
 			== FALSE) {
@@ -120,6 +123,7 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			PostMessage(hWnd, WM_DESTROY, NULL, NULL);
 			break;
 		}
+
 
 		SetTimer(hWnd, IDT_TIMER1, 1000/FPS, NULL);	//第3引数:50ms(1000/20fps)
 
@@ -151,6 +155,25 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InvalidateRect(hWnd, NULL, FALSE);
 		return 0;
 	}
+	case WM_MOUSEMOVE:
+	{
+			if (wParam & MK_LBUTTON) {
+
+				mouse_x = LOWORD(lParam);
+				mouse_y = HIWORD(lParam);
+
+
+				if (MHCurve1.CheckMousePos(mouse_x, mouse_y, &check)) {
+					MHCurve1.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, check);
+				}
+			}
+		break;
+	}
+	case WM_LBUTTONUP:
+	{
+			check = -1;
+			break;
+	}
 	case WM_KEYDOWN:
 	{
 		switch (wParam) {
@@ -170,6 +193,8 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		//描画開始
 		hdc = BeginPaint(hWnd, &ps);
+
+
 
 		//------------------------------------------
 		// ベジエ曲線の描画
@@ -191,18 +216,18 @@ LRESULT Window::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//  曲線レーザーを描画させる
 		//----------------------------------------------------------------
 		laser.Draw(hdc);
+		
+		MHCurve1.Draw(hdc);
 
-		MHCurve.Draw(hdc);
-
-		HPEN old = (HPEN)SelectObject(hdc, CreatePen(PS_SOLID, 2, RGB(255, 0, 0)));
-		MoveToEx(hdc, 100+50 * cos(45), 100-50 * sin(45), NULL);
-		Rectangle(hdc, 210, 10, 400, 200);
-		HBRUSH oldb = (HBRUSH)SelectObject(hdc, CreateSolidBrush(RGB(0, 150, 150)));
-		AngleArc(hdc, 100, 100, 50, 45, at);
-		Pie(hdc, 210, 10, 400, 200, 0, 100, 310, 0);
-		DeleteObject(SelectObject(hdc, old));
-		DeleteObject(SelectObject(hdc, oldb));
-
+		//HPEN old = (HPEN)SelectObject(hdc, CreatePen(PS_SOLID, 2, RGB(255, 0, 0)));
+		//MoveToEx(hdc, 100+50 * cos(45), 100-50 * sin(45), NULL);
+		//Rectangle(hdc, 210, 10, 400, 200);
+		//HBRUSH oldb = (HBRUSH)SelectObject(hdc, CreateSolidBrush(RGB(0, 150, 150)));
+		//AngleArc(hdc, 100, 100, 50, 45, at);
+		//Pie(hdc, 210, 10, 400, 200, 0, 100, at, 0);
+		//DeleteObject(SelectObject(hdc, old));
+		//DeleteObject(SelectObject(hdc, oldb));
+		
 		//描画終了
 		EndPaint(hWnd, &ps);
 		break;

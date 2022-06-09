@@ -6,6 +6,7 @@
 #include "strsafe.h"
 
 #include "Window.h"
+#include "Window2.h"
 
 // グローバル変数
 HINSTANCE g_hInstance;
@@ -24,6 +25,15 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	HWND hWnd = window.GetWinHandle();
 	SetWindowPos(hWnd, HWND_TOPMOST, NULL, NULL, NULL, NULL, SWP_NOMOVE | SWP_NOSIZE);
+	
+	Window2 window2(TEXT("window2"), SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (window2.Create() == FALSE) {
+		return 0;
+	}
+	HWND hWnd2 = window2.GetWinHandle();
+	SetWindowPos(hWnd2, HWND_TOPMOST, NULL, NULL, NULL, NULL, SWP_NOMOVE | SWP_NOSIZE);
+
+
 
 	MSG msg;
 	// メッセージループ
