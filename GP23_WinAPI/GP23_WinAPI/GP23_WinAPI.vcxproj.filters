@@ -25,6 +25,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{721e7b5a-f618-4861-81bb-b7d0b57349f3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="半透明合成">
+      <UniqueIdentifier>{af0fdc46-0596-46fa-aa52-bc18e0ef7650}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Vector.cpp">

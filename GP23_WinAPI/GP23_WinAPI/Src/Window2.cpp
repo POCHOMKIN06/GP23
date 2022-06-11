@@ -159,49 +159,49 @@ LRESULT Window2::WindowProc2(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			mouse_x = LOWORD(lParam);
 			mouse_y = HIWORD(lParam);
 
-			RECT rect = MHCurve.GetRect();
+			//RECT rect = MHCurve.GetRect();
 
-			MovableHermitianCurve::ContPos cp = MHCurve.GetControlPos();
-			RECT c_rect[4];
-			c_rect[0] = RECT{ (int)(cp.s_pos.x + rect.left),	 (int)(cp.s_pos.y + rect.top),	   (int)(cp.s_pos.x + rect.right),	   (int)(cp.s_pos.y + rect.bottom) };
-			c_rect[1] = RECT{ (int)(cp.s_vec_pos.x + rect.left), (int)(cp.s_vec_pos.y + rect.top), (int)(cp.s_vec_pos.x + rect.right), (int)(cp.s_vec_pos.y + rect.bottom) };
-			c_rect[2] = RECT{ (int)(cp.e_pos.x + rect.left),	 (int)(cp.e_pos.y + rect.top),	   (int)(cp.e_pos.x + rect.right),	   (int)(cp.e_pos.y + rect.bottom) };
-			c_rect[3] = RECT{ (int)(cp.e_vec_pos.x + rect.left), (int)(cp.e_vec_pos.y + rect.top), (int)(cp.e_vec_pos.x + rect.right), (int)(cp.e_vec_pos.y + rect.bottom) };
+			//MovableHermitianCurve::ContPos cp = MHCurve.GetControlPos();
+			//RECT c_rect[4];
+			//c_rect[0] = RECT{ (int)(cp.s_pos.x + rect.left),	 (int)(cp.s_pos.y + rect.top),	   (int)(cp.s_pos.x + rect.right),	   (int)(cp.s_pos.y + rect.bottom) };
+			//c_rect[1] = RECT{ (int)(cp.s_vec_pos.x + rect.left), (int)(cp.s_vec_pos.y + rect.top), (int)(cp.s_vec_pos.x + rect.right), (int)(cp.s_vec_pos.y + rect.bottom) };
+			//c_rect[2] = RECT{ (int)(cp.e_pos.x + rect.left),	 (int)(cp.e_pos.y + rect.top),	   (int)(cp.e_pos.x + rect.right),	   (int)(cp.e_pos.y + rect.bottom) };
+			//c_rect[3] = RECT{ (int)(cp.e_vec_pos.x + rect.left), (int)(cp.e_vec_pos.y + rect.top), (int)(cp.e_vec_pos.x + rect.right), (int)(cp.e_vec_pos.y + rect.bottom) };
 
 
-			if (mouse_x >= c_rect[0].left && mouse_x <= c_rect[0].right
-				&& mouse_y >= c_rect[0].top && mouse_y <= c_rect[0].bottom) {
-				check1[0] = true;
-			}
-			if (mouse_x >= c_rect[1].left && mouse_x <= c_rect[1].right
-				&& mouse_y >= c_rect[1].top && mouse_y <= c_rect[1].bottom) {
-				check1[1] = true;
-			}
-			if (mouse_x >= c_rect[2].left && mouse_x <= c_rect[2].right
-				&& mouse_y >= c_rect[2].top && mouse_y <= c_rect[2].bottom) {
-				check1[2] = true;
-			}
-			if (mouse_x >= c_rect[3].left && mouse_x <= c_rect[3].right
-				&& mouse_y >= c_rect[3].top && mouse_y <= c_rect[3].bottom) {
-				check1[3] = true;
-			}
-
-			if (check1[0] == true) {
-				MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 0);
-			}
-			if (check1[1] == true) {
-				MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 1);
-			}
-			if (check1[2] == true) {
-				MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 2);
-			}
-			if (check1[3] == true) {
-				MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 3);
-			}
-
-			//if (MHCurve.CheckMousePos(mouse_x, mouse_y, &check)) {
-			//	MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, check);
+			//if (mouse_x >= c_rect[0].left && mouse_x <= c_rect[0].right
+			//	&& mouse_y >= c_rect[0].top && mouse_y <= c_rect[0].bottom) {
+			//	check1[0] = true;
 			//}
+			//if (mouse_x >= c_rect[1].left && mouse_x <= c_rect[1].right
+			//	&& mouse_y >= c_rect[1].top && mouse_y <= c_rect[1].bottom) {
+			//	check1[1] = true;
+			//}
+			//if (mouse_x >= c_rect[2].left && mouse_x <= c_rect[2].right
+			//	&& mouse_y >= c_rect[2].top && mouse_y <= c_rect[2].bottom) {
+			//	check1[2] = true;
+			//}
+			//if (mouse_x >= c_rect[3].left && mouse_x <= c_rect[3].right
+			//	&& mouse_y >= c_rect[3].top && mouse_y <= c_rect[3].bottom) {
+			//	check1[3] = true;
+			//}
+
+			//if (check1[0] == true) {
+			//	MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 0);
+			//}
+			//if (check1[1] == true) {
+			//	MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 1);
+			//}
+			//if (check1[2] == true) {
+			//	MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 2);
+			//}
+			//if (check1[3] == true) {
+			//	MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, 3);
+			//}
+
+			if (MHCurve.CheckMousePos(mouse_x, mouse_y, &check)) {
+				MHCurve.MovePos(POINTFLOAT{ (float)mouse_x, (float)mouse_y }, check);
+			}
 
 			RECT wrect;
 			GetClientRect(hWnd, &wrect);
@@ -236,7 +236,7 @@ LRESULT Window2::WindowProc2(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		//•`‰æŠJŽn
 		hdc = BeginPaint(hWnd, &ps);
-
+		InvalidateRect(hWnd, nullptr, TRUE);
 
 
 		//------------------------------------------
