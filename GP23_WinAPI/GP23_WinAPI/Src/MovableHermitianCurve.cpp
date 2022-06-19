@@ -149,7 +149,6 @@ BOOL MovableHermitianCurve::CheckMousePos(const int m_x, const int m_y, int * ou
 		return TRUE;
 	}
 
-	//*out = -1;
 	return FALSE;
 }
 
