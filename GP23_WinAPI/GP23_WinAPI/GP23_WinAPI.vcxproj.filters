@@ -28,6 +28,9 @@
     <Filter Include="半透明合成">
       <UniqueIdentifier>{af0fdc46-0596-46fa-aa52-bc18e0ef7650}</UniqueIdentifier>
     </Filter>
+    <Filter Include="k01_CGは芸術だ！">
+      <UniqueIdentifier>{95b6560e-8554-4407-9c4d-8c65d4cf4d50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\Vector.cpp">
@@ -69,6 +72,15 @@
     <ClCompile Include="Src\Window2.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Fireworks.cpp">
+      <Filter>k01_CGは芸術だ！</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\NightSky.cpp">
+      <Filter>k01_CGは芸術だ！</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\StarLight.cpp">
+      <Filter>k01_CGは芸術だ！</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\main.h">
@@ -109,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="Src\Window2.h">
       <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Fireworks.h">
+      <Filter>k01_CGは芸術だ！</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\NightSky.h">
+      <Filter>k01_CGは芸術だ！</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\StarLight.h">
+      <Filter>k01_CGは芸術だ！</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

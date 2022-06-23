@@ -1,7 +1,10 @@
 #pragma once
 
 #include <Windows.h>
-#include "HermitianCurve.h"
+//#include "HermitianCurve.h"
+
+//前方宣言
+class HermitianCurve;
 
 class Laser
 {
@@ -29,7 +32,7 @@ public:
 	//getter
 	const STATUS& GetStatus() const { return Status_; }
 
-private:
+protected:
 	STATUS Status_;							// ステータス
 	INT Idx_Start_;							// レーザー開始インデックス
 	INT Idx_End_;							// レーザー終了インデックス

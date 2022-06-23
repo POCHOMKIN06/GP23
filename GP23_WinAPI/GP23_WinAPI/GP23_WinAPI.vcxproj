@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClCompile Include="Src\AxisLine.cpp" />
     <ClCompile Include="Src\BegieCurve.cpp" />
+    <ClCompile Include="Src\Fireworks.cpp" />
     <ClCompile Include="Src\HermitianCurve.cpp" />
     <ClCompile Include="Src\input.cpp" />
     <ClCompile Include="Src\Laser.cpp" />
@@ -134,6 +135,8 @@
     <ClCompile Include="Src\MovableHermitianCurve.cpp" />
     <ClCompile Include="Src\MoveType.cpp" />
     <ClCompile Include="Src\MovingCircle.cpp" />
+    <ClCompile Include="Src\NightSky.cpp" />
+    <ClCompile Include="Src\StarLight.cpp" />
     <ClCompile Include="Src\Vector.cpp" />
     <ClCompile Include="Src\Viewer.cpp" />
     <ClCompile Include="Src\Window.cpp" />
@@ -142,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="Src\AxisLine.h" />
     <ClInclude Include="Src\BegieCurve.h" />
+    <ClInclude Include="Src\Fireworks.h" />
     <ClInclude Include="Src\HermitianCurve.h" />
     <ClInclude Include="Src\input.h" />
     <ClInclude Include="Src\Laser.h" />
@@ -149,6 +153,8 @@
     <ClInclude Include="Src\MovableHermitianCurve.h" />
     <ClInclude Include="Src\MoveType.h" />
     <ClInclude Include="Src\MovingCircle.h" />
+    <ClInclude Include="Src\NightSky.h" />
+    <ClInclude Include="Src\StarLight.h" />
     <ClInclude Include="Src\Vector.h" />
     <ClInclude Include="Src\VIewer.h" />
     <ClInclude Include="Src\Window.h" />

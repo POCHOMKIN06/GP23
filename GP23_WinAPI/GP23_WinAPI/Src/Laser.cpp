@@ -1,5 +1,7 @@
 #include "Laser.h"
 
+#include "HermitianCurve.h"
+
 Laser::Laser()
 	: Status_(STATUS::STANDBY)
 	, Idx_Start_(0)

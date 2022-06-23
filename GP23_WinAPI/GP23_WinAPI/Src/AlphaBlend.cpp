@@ -208,7 +208,7 @@ void ExecTileObject()
 		bmppt2 = bmppt = g_pBitmap + (g_ObjTile[i].py * g_LineLength * g_ObjTile[i].px);
 
 		pixel0.dword = g_ObjTile[i].color;
-		base_b = ;
+		//base_b = ;
 
 
 
@@ -219,7 +219,7 @@ void ExecTileObject()
 				pixel1.dword = *bmppt;
 
 				// バイト単位でアルファ値を含めて合成演算
-				wd0 = (WORD)(base_b + );
+				//wd0 = (WORD)(base_b + );
 
 				// ワードデータを割り算しつつ書き込み用データを生成
 				pixel2.byte[0] = (BYTE)((wd0 >> 8) & 0xff);

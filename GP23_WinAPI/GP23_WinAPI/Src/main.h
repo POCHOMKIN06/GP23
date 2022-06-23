@@ -10,7 +10,7 @@
 
 // マクロ定義
 //#define CLASS_NAME	TEXT("サンプル")
-#define WINDOW_NAME	TEXT("[ GP23 Hermite2 ]")
+#define WINDOW_NAME	TEXT("CGは芸術だ！")
 
 const UINT	SCREEN_WIDTH  = 640;				// スクリーン＆ビットマップ幅
 const UINT	SCREEN_HEIGHT = 480;				// スクリーン＆ビットマップ高さ
