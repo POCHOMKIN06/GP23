@@ -3,17 +3,18 @@
 #include "HermitianCurve.h"
 #include "main.h"
 
+#include <time.h>
 
-const POINTFLOAT Fireworks::defSPos = { SCREEN_WIDTH / 2, SCREEN_HEIGHT - 100 };
-const POINTFLOAT Fireworks::defEPos = { SCREEN_WIDTH / 2, 100 };
+const POINTFLOAT Fireworks::defSPos = { 50, SCREEN_HEIGHT - 100 };
+const POINTFLOAT Fireworks::defEPos = { 50, 100 };
 const POINTFLOAT Fireworks::defSVec = { 0, -500 };
 const POINTFLOAT Fireworks::defEVec = { 0, -500 };
 
 
 Fireworks::Fireworks()
 {
-	POINTFLOAT s_pos = { rand() % (SCREEN_WIDTH / 2) + defSPos.x, defSPos.y };
-	POINTFLOAT e_pos = { rand() % (SCREEN_WIDTH / 4) + defEPos.x, rand() % (SCREEN_HEIGHT / 4) + defEPos.y };
+	POINTFLOAT s_pos = { rand() % (SCREEN_WIDTH - 50) + defSPos.x, defSPos.y };
+	POINTFLOAT e_pos = { rand() % (SCREEN_WIDTH - 50) + defEPos.x, rand() % (SCREEN_HEIGHT / 4) + defEPos.y };
 	POINTFLOAT s_vec = { rand() % (SCREEN_WIDTH / 3) + defSVec.x, rand() % (SCREEN_HEIGHT / 10) + defSVec.y };
 	POINTFLOAT e_vec = { rand() % (SCREEN_WIDTH / 3) + defEVec.x, rand() % (SCREEN_HEIGHT / 10) + defEVec.y };
 
@@ -25,7 +26,7 @@ Fireworks::~Fireworks()
 	
 }
 
-void Fireworks::Update()
+void Fireworks::Update(int time)
 {
 	//Laser::Update()の一部を改変
 	HermitianCurve::Params ps = HCurve_->GetParams();
@@ -62,7 +63,7 @@ void Fireworks::Update()
 	}
 }
 
-void Fireworks::Update(const POINTFLOAT s_pos, const POINTFLOAT e_pos)
+void Fireworks::Update(int time, const POINTFLOAT s_pos, const POINTFLOAT e_pos)
 {
 	Laser::Update(s_pos, e_pos);
 }
@@ -70,17 +71,19 @@ void Fireworks::Update(const POINTFLOAT s_pos, const POINTFLOAT e_pos)
 void Fireworks::Draw(HDC hdc)
 {
 #define SC_I(param) (static_cast<int>(param))
+#define BASE_C	RGB(175, 238, 238)
+#define LIGHT_C RGB(224, 255, 255)
 
-	HPEN hDefaultPen = (HPEN)SelectObject(hdc, CreatePen(PS_SOLID, 1, RGB(0, 255, 255)));	// レーザー用ペンを作成
+	HPEN hDefaultPen = (HPEN)SelectObject(hdc, CreatePen(PS_SOLID, 1, BASE_C));	// 煙のペン
 
 	HermitianCurve::Params ps = HCurve_->GetParams();
 
 	MoveToEx(hdc, SC_I(ps.c_pt[Idx_Start_].x), SC_I(ps.c_pt[Idx_Start_].y), NULL);
 	for (INT i = Idx_Start_ + 1; i <= Idx_End_; i++) {
 		if (i % 31 == 0 || i % 4 == 0) {
-			DeleteObject(SelectObject(hdc, CreatePen(PS_SOLID, 4, RGB(0, 255, 255))));
+			DeleteObject(SelectObject(hdc, CreatePen(PS_SOLID, 4, BASE_C)));
 		} else {
-			DeleteObject(SelectObject(hdc, CreatePen(PS_SOLID, 2, RGB(0, 255, 255))));
+			DeleteObject(SelectObject(hdc, CreatePen(PS_SOLID, 2, LIGHT_C)));
 		}
 		LineTo(hdc, SC_I(ps.c_pt[i].x), SC_I(ps.c_pt[i].y));
 	}

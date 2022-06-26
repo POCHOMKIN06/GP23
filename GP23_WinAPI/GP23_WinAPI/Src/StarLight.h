@@ -15,7 +15,7 @@ public:
 	StarLight(POINT pos, SIZE size);
 	~StarLight();
 
-	void Update();
+	void Update(int time);
 	void Draw(HDC hdc);
 
 private:

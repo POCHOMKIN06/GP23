@@ -2,6 +2,12 @@
 
 #include <Windows.h>
 
+enum class STATUS {
+	STANDBY,
+	SHOOT,
+	END
+};
+
 class HermitianCurve
 {
 public:

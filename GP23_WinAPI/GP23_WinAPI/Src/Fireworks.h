@@ -8,8 +8,8 @@ public:
 	Fireworks();
 	~Fireworks();
 
-	void Update();
-	void Update(const POINTFLOAT s_pos, const POINTFLOAT e_pos);
+	void Update(int time);
+	void Update(int time, const POINTFLOAT s_pos, const POINTFLOAT e_pos);
 
 	void Draw(HDC hdc);
 

@@ -33,11 +33,11 @@ void Laser::Update()
 
 	//描画用始点と終点を設定
 	switch (Status_) {
-	case Laser::STATUS::STANDBY:
+	case STATUS::STANDBY:
 		Idx_Start_ = 0;
 		Idx_End_ = 0;
 		break;
-	case Laser::STATUS::SHOOT:
+	case STATUS::SHOOT:
 		if (static_cast<UINT>(Idx_End_) < ps.c_div) {	// レーザーを敵まで伸ばす
 			Idx_End_++;
 			Idx_Start_ = Idx_End_ - 3;
@@ -50,8 +50,8 @@ void Laser::Update()
 			Status_ = STATUS::END;
 		}
 		break;
-	case Laser::STATUS::END:
-		Status_ = Laser::STATUS::STANDBY;
+	case STATUS::END:
+		Status_ = STATUS::STANDBY;
 		break;
 	default:
 		break;

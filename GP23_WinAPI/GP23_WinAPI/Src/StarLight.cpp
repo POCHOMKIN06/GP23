@@ -11,11 +11,9 @@ StarLight::~StarLight()
 {
 }
 
-void StarLight::Update()
+void StarLight::Update(int time)
 {
-	static int cnt = 0;
-	cnt++;
-	if (cnt % 5 == 0) {
+	if (time % 5 == 0) {
 		radius_++;
 		switch (size_) {
 		case StarLight::SIZE::Small:
@@ -24,7 +22,7 @@ void StarLight::Update()
 			}
 			break;
 		case StarLight::SIZE::Middle:
-			if (radius_ >= 3) {
+			if (radius_ >= 4) {
 				radius_ = 3;
 			}
 			break;
@@ -37,7 +35,7 @@ void StarLight::Update()
 			break;
 		}
 	} 
-	if (cnt % 11 == 0) {
+	if (time % 11 == 0) {
 		radius_--;
 		if (radius_ <= 0) {
 			radius_ = 0;
